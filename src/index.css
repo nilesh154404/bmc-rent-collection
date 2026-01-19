@@ -1,0 +1,229 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 215 70% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 15% 92%;
+    --secondary-foreground: 215 25% 25%;
+
+    --muted: 210 15% 95%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 200 75% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 145 65% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 215 70% 35%;
+
+    --radius: 0.5rem;
+
+    /* Custom tokens */
+    --gov-blue: 215 70% 35%;
+    --gov-blue-light: 215 60% 50%;
+    --gov-blue-dark: 215 75% 25%;
+    --gov-grey: 210 15% 45%;
+    --gov-grey-light: 210 15% 92%;
+
+    --sidebar-background: 215 75% 25%;
+    --sidebar-foreground: 210 20% 95%;
+    --sidebar-primary: 200 75% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 60% 35%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 60% 30%;
+    --sidebar-ring: 200 75% 55%;
+
+    --chart-1: 215 70% 45%;
+    --chart-2: 200 75% 50%;
+    --chart-3: 145 65% 45%;
+    --chart-4: 38 92% 55%;
+    --chart-5: 0 70% 55%;
+  }
+
+  .dark {
+    --background: 215 30% 10%;
+    --foreground: 210 20% 95%;
+
+    --card: 215 30% 15%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 215 30% 15%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 200 75% 55%;
+    --primary-foreground: 215 30% 10%;
+
+    --secondary: 215 25% 25%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 215 25% 20%;
+    --muted-foreground: 210 15% 60%;
+
+    --accent: 200 70% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 145 60% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 90% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --border: 215 25% 25%;
+    --input: 215 25% 25%;
+    --ring: 200 75% 55%;
+
+    --sidebar-background: 215 35% 12%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 200 75% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 40% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 215 30% 20%;
+    --sidebar-ring: 200 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .stat-card {
+    @apply bg-card rounded-lg border border-border p-5 shadow-sm hover:shadow-md transition-shadow;
+  }
+
+  .data-table {
+    @apply w-full border-collapse;
+  }
+
+  .data-table th {
+    @apply bg-muted text-left px-4 py-3 text-sm font-semibold text-foreground border-b border-border;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 text-sm border-b border-border;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-muted/50;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-active {
+    @apply bg-success/15 text-success;
+  }
+
+  .status-pending {
+    @apply bg-warning/15 text-warning;
+  }
+
+  .status-failed {
+    @apply bg-destructive/15 text-destructive;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors;
+  }
+
+  .nav-link:hover {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+  }
+
+  .nav-link.active {
+    @apply bg-sidebar-primary text-sidebar-primary-foreground;
+  }
+
+  .page-header {
+    @apply mb-6 pb-4 border-b border-border;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-foreground;
+  }
+
+  .page-subtitle {
+    @apply text-muted-foreground mt-1;
+  }
+
+  .card-header-gov {
+    @apply flex items-center justify-between pb-4 border-b border-border mb-4;
+  }
+
+  .quick-action {
+    @apply flex items-center gap-3 p-4 rounded-lg border border-border bg-card hover:bg-muted/50 hover:border-primary/30 transition-all cursor-pointer;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
