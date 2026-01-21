@@ -4,44 +4,91 @@ import { Building2, Users, Shield, ArrowRight, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useAuth } from '@/contexts/AuthContext';
-import { demoUsers } from '@/lib/mockData';
+
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage: React.FC = () => {
-  const [loginType, setLoginType] = useState<'tenant' | 'admin'>('tenant');
+  const [loginType, setLoginType] = useState<'tenant' | 'admin'>('admin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    
-    const success = login(email, password, loginType);
+  const navigate = useNavigate();
+  const { login: contextLogin } = useAuth();
+
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  
+  // Validate form
+  if (!email || !password) {
+    setError("Please enter both email and password");
+    return;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    setError("Please enter a valid email address");
+    return;
+  }
+
+  if (password.length < 6) {
+    setError("Password must be at least 6 characters");
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    console.log("📝 LoginPage: Calling contextLogin with email:", email);
+    // Call the login from context
+    const success = await contextLogin(email, password, loginType);
+    console.log("📝 LoginPage: Login result:", success);
+
     if (success) {
-      toast.success(`Welcome to BMC ${loginType === 'admin' ? 'Admin' : 'Tenant/Lessee'} Portal`);
+      toast.success(`Welcome to BMC Portal`);
+      // Redirect based on login type selected
       navigate(loginType === 'tenant' ? '/tenant/dashboard' : '/admin/dashboard');
     } else {
-      setError('Invalid email or password. Please try the demo credentials below.');
+      setError("Invalid email or password");
     }
-  };
 
-  const fillDemoCredentials = (type: 'tenant1' | 'tenant2' | 'admin') => {
-    if (type === 'admin') {
-      setLoginType('admin');
-      setEmail(demoUsers.admin.email);
-      setPassword(demoUsers.admin.password);
+  } catch (error: any) {
+    console.error("📝 LoginPage: Caught error");
+    console.error("📝 Error type:", typeof error);
+    console.error("📝 Error name:", error.name);
+    console.error("📝 Error message:", error.message);
+    console.error("📝 Error code:", error.code);
+    console.error("📝 Response status:", error.response?.status);
+    console.error("📝 Response data:", error.response?.data);
+
+    // Handle different error scenarios
+    const errorMessage = error.response?.data?.message || error.message;
+    
+    if (error.response?.status === 401) {
+      setError("Invalid email or password");
+    } else if (error.response?.status === 403) {
+      setError("Access denied. Please contact administrator.");
+    } else if (error.response?.status === 400) {
+      setError(errorMessage || "Invalid request. Please check your credentials.");
+    } else if (error.response?.status === 500) {
+      setError(`Server error: ${errorMessage || "Please try again later or contact support."}`);
+    } else if (error.message === 'Network Error') {
+      setError("Network error. Please check your connection and API endpoint.");
+    } else if (errorMessage) {
+      setError(errorMessage);
     } else {
-      setLoginType('tenant');
-      setEmail(demoUsers[type].email);
-      setPassword(demoUsers[type].password);
+      setError("Login failed. Please try again.");
     }
-    setError('');
-  };
+  } finally {
+      setLoading(false);
+    }
+};
+
+
+
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -165,6 +212,8 @@ const LoginPage: React.FC = () => {
                   placeholder={loginType === 'tenant' ? 'Enter your email' : 'admin@bmc.gov.in'}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  disabled={loading}
+                  required
                   className="h-11"
                 />
               </div>
@@ -176,6 +225,8 @@ const LoginPage: React.FC = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  disabled={loading}
+                  required
                   className="h-11"
                 />
               </div>
@@ -211,7 +262,11 @@ const LoginPage: React.FC = () => {
             </div>
             <div className="space-y-2">
               <button 
-                onClick={() => fillDemoCredentials('tenant1')}
+                type="button"
+                onClick={() => {
+                  setEmail('rajesh.kumar@email.com');
+                  setPassword('tenant123');
+                }}
                 className="w-full text-left p-2 rounded bg-card hover:bg-accent/10 transition-colors text-sm"
               >
                 <span className="font-medium text-foreground">Tenant (e-NACH Not Registered)</span>
@@ -219,7 +274,11 @@ const LoginPage: React.FC = () => {
                 <span className="text-muted-foreground text-xs">rajesh.kumar@email.com / tenant123</span>
               </button>
               <button 
-                onClick={() => fillDemoCredentials('tenant2')}
+                type="button"
+                onClick={() => {
+                  setEmail('priya.patel@email.com');
+                  setPassword('lessee456');
+                }}
                 className="w-full text-left p-2 rounded bg-card hover:bg-accent/10 transition-colors text-sm"
               >
                 <span className="font-medium text-foreground">Lessee (e-NACH Active)</span>
@@ -227,7 +286,11 @@ const LoginPage: React.FC = () => {
                 <span className="text-muted-foreground text-xs">priya.patel@email.com / lessee456</span>
               </button>
               <button 
-                onClick={() => fillDemoCredentials('admin')}
+                type="button"
+                onClick={() => {
+                  setEmail('admin@bmc.gov.in');
+                  setPassword('admin123');
+                }}
                 className="w-full text-left p-2 rounded bg-card hover:bg-accent/10 transition-colors text-sm"
               >
                 <span className="font-medium text-foreground">Admin Portal</span>
